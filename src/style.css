@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  background-color: #101010;
+  color: #cccccc;
+  font-family: Verdana;
+}
+
+section {
+  height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 0;
+  box-sizing: border-box;
+}
+header {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background-color: #ffffff0f;
+  margin-bottom: 10px;
+}
+header:empty {
+  display: none;
+}
+main {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffffff0f;
+}
+
+main img {
+  width: 180px;
+  margin: 0 auto;
+}
+button {
+  font-family: Verdana;
+  border: 0;
+  padding: 10px 20px;
+  width: max-content;
+  margin-top: 20px;
+}
