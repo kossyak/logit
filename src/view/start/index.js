@@ -1,23 +1,21 @@
-import api from '../../api'
 import nodeComponent from '../../nodeComponent'
 
 const start = {
-	template: `<img src="${require('../../images/logit.svg')}"><button class="connect btn">Connect</button>`,
+	template: `
+		<section class="start">
+			<img class="logit_mini" src="${require('../../images/logit_mini.svg')}">
+			<img class="logit" src="${require('../../images/logit.svg')}">
+			<label>
+				<input type="checkbox" class="checkbox">температуры и давления реального устройства
+			</label>
+			<button class="connect btn">Connect</button>
+		</section>`,
 		nodes() {
 		return {
-			...nodeComponent.next.bind(this)('connect', 'records', this.method.connect)
-		}
-	},
-	methods: {
-		async connect() {
-			try {
-				this.app.data = await api.connect()
-				const { series_number, version, battery } = this.app.data
-				this.app.container.header.innerHTML = `<span>s/n: ${ series_number }</span><span>version: ${ version }</span><span>battery: ${ battery }%</span>`
-			} catch(e) {
-				console.log(e)
-				return true
-			}
+			checkbox: {
+				onchange: (e) => this.app.checked = e.target.checked
+			},
+			...nodeComponent.next.bind(this)('connect', 'records', this.app.connect)
 		}
 	}
 }

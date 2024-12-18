@@ -1,48 +1,78 @@
 import commands from '../../fake_divace'
-import { connect, sendCommand } from './connector'
-import { bytesToBn, bufToBn, bnToB64, bytesToBase64, bytesToDateTime } from './converter'
+import connector from './connector'
+import { bytesToBn, bufToBn, bnToB64, bytesToBase64, bytesToDateTime, bytesToFloat } from './converter'
 
 export default {
-	async connect() {
-		await connect()
-		// await sendCommand([0])
-		// get s/n, version, battery
-		const a = commands[25]()
-		const series_number = bytesToBn(commands[2]()) // converter[2](data)
-		const version = bytesToBn(commands[3]())
-		const battery = bytesToBn(commands[4]())
-		// get records
-		const count = bytesToBn(commands[5]())
+	async connect(checked) {
+		if (checked) await connector.connect()
+		// await connector.send([0])
+		const versionBytes = commands[3]()
+		const recordsCount = bytesToBn(commands[5]())
+		const data = {
+			series_number: bytesToBn(commands[2]()),
+			version:`${versionBytes.splice(0,1)}.${versionBytes.splice(0,1)}`,
+			uts: 4,
+			memory: 50,
+			battery: bytesToBn(commands[4]()),
+			total: recordsCount,
+			records: this.getRecords(recordsCount)
+		}
+		return data
+	},
+	async disconnect() {
+		await connector.close()
+	},
+	clearRecords() {
+		console.log('clearRecords')
+	},
+	getRecords(recordsCount) {
 		const records = []
-		for (let i = 0; i < count; i++) {
+		for (let index = 0; index < recordsCount; index++) {
+			const readingsCount = bytesToBn(commands[29](index))
+			const readingsBytes = commands[41](index)
+			const depth = bytesToBn(commands[21](index))
+			const coordinatesBytes = commands[29](index)
+			const N = bytesToBn(coordinatesBytes.splice(0,2))
+			const E = bytesToBn(coordinatesBytes.splice(0,2))
+			const start_datetime = bytesToDateTime(commands[22]())
+			const end_datetime = bytesToDateTime(commands[23]())
+			const survey = commands[26](index)
+			const survey_method = survey.splice(0,1)
+			const intervals = bytesToBn(survey)
 			const record = {
-				name: btoa(String.fromCharCode(...new Uint8Array(commands[25]())))
+				name: btoa(String.fromCharCode(...new Uint8Array(commands[25]()))),
+				total: readingsCount,
+				depth,
+				start_datetime,
+				end_datetime,
+				survey_method,
+				intervals,
+				N,
+				E,
+				readings: this.readingsRecord(readingsBytes)
 			}
+			this.readingsRecord(readingsBytes)
 			records.push(record)
 		}
-		const b = commands[23]()
-		console.log(bnToB64(bufToBn(a)), bytesToBase64(a), bytesToDateTime(b), new Date(bytesToDateTime(b) * 1000))
-	
-		
-		return { series_number, version, battery, count, records }
+		return records
 	},
-	disconnect() {
-	
+	readingsRecord(readingsBytes) {
+		const readings = readingsBytes.reduce((acc, _, i) => {
+			if (i % 4 === 0) {
+				acc.push({
+					temp: bytesToFloat([readingsBytes[i], readingsBytes[i + 1]]),
+					pressure: bytesToFloat([readingsBytes[i + 2], readingsBytes[i + 3]]),
+					datetime: bytesToDateTime(commands[22]())
+				})
+			}
+			return acc
+		}, [])
+		return readings
 	},
-	realTime() {
-		// 6 temp
-		// 7 p
-	},
-	getRecords() {
-		// 5 - Количество записей
-		// 20 - местополежение
-		// 21-
-		// 22-
-		// 23-
-		// 24-
-		// 25-
-		// 26-
-		// 41
+	async readingsRealtime(checked) { //
+		const temp = bytesToFloat(checked ? await connector.send([6]) : commands[6]())
+		const pressure = bytesToFloat(checked ? await connector.send([7]) : commands[7]())
+		return { temp, pressure }
 	},
 	stop() {
 	

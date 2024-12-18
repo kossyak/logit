@@ -10,29 +10,27 @@ const connect = async () => {
 	reader = port.readable.getReader()
 }
 
-const sendCommand = async (command) => {
+const send = async (command) => {
 	// sending a packet
-	const packet = new Uint8Array(command)
+	command.length = 40
+	const fullCommand = command.fill(0, 1, 40)
+	const packet = new Uint8Array(fullCommand)
 	await writer.write(packet)
+	console.log(packet)
 	// response
 	const { value, done } = await reader.read()
-	return !done? value : console.error('|reader| has been canceled.')
+	const newValue = value.splice(0, 2)
+	return !done? newValue : console.error('|reader| has been canceled.')
 }
 
-async function closeConnection() {
-	await writer?.releaseLock()
-	await reader?.releaseLock()
+async function close() {
+	writer?.releaseLock()
+	reader?.releaseLock()
 	if (port) {
 		await port.close()
 		port = null
 	}
 }
-// disconnect
-window.onbeforeunload = async () => await closeConnection()
-window.onunload = async () => await closeConnection()
-document.ondblclick = async () => {
-	console.log(111)
-	await closeConnection()
-}
 
-export { connect, sendCommand }
+
+export default { connect, send, close }

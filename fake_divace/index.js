@@ -11,10 +11,11 @@ export default {
 	20: (index) => randomBitArray(32 + 32), // get coordinates
 	21: (index) => randomBitArray(16), // get depth
 	22: (index) => randomBitArray(32), // get start time
-	23: (index) => randomBitArray(32), // get stop time
+	23: (index) => randomBitArray(32), // get end time
 	24: (index) => randomBitArray(16), // get delayed start time
-	25: (index) => randomBitArray(120), // get name record
-	26: (index) => randomBitArray(8 + 128), // get record polling method
+	25: (index) => randomBitArray(112), // get name record
+	26: (index) => randomBitArray(8 + 128), // get record survey
+	29: (index) => randomBitArray(32), // get readingsCount
 	40: (data) => randomInt(0, 1),
-	41: (index) => randomBitArray((16 + 16) * 10), // get record polling method
+	41: (index) => randomBitArray((16 + 16) * 10), // get record survey
 }

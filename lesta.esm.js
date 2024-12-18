@@ -172,13 +172,13 @@ function cleanHTML(str) {
   function clean(html2) {
     const nodes = html2.children;
     for (let node2 of nodes) {
-      removeAttributes(node2);
+      // removeAttributes(node2); // ?
       clean(node2);
     }
   }
   const html = stringToHTML(str.trim());
-  removeScripts(html);
-  clean(html);
+  // removeScripts(html);
+  // clean(html); // ?
   return html.childNodes;
 }
 
@@ -1772,13 +1772,14 @@ async function mountWidget({ options, target, name = "root", completed, aborted 
     unmount() {
       controller.abort();
       target.innerHTML = "";
+      component2.component.unmounted?.bind(component2.context)();
+      delete container.unmount;
     }
   };
   const component2 = new InitNode(src, container, app, controller, factoryNode_default);
   const render = () => {
     component2.context.container = container;
     if (src.template) {
-      target.innerHTML = "" // !
       target.append(...templateToHTML(src.template, component2.context));
     }
   };

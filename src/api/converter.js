@@ -97,9 +97,11 @@ function bytesToDateTime(bytes) {
 	return new Date(num * 1000)
 }
 
+function bytesToFloat(bytes) {
+	return parseInt(bytesToBn(bytes)) / 100
+}
 
-
-export { bytesToBn, BnToBytes, b64ToBn, bnToB64, bufToBn, bytesToBase64, bytesToDateTime}
+export { bytesToBn, BnToBytes, b64ToBn, bnToB64, bufToBn, bytesToBase64, bytesToDateTime, bytesToFloat}
 
 // export default {
 // 	toNumber: (bytes) => combineBytes(bytes),

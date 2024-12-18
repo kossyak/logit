@@ -2,10 +2,10 @@
   "name": "logit",
   "version": "1.0.0",
   "main": "index.js",
+  "homepage": "https://kossyak.github.io/logit",
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack serve",
-    "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
   "author": "Sasha Kosyak",

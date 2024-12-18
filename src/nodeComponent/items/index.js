@@ -1,11 +1,11 @@
 function items(items, keys, callback) {
 	return {
 		items: {
-			innerHTML: () => items?.reduce((l, e, i) => l + `<li class="item" data-index="${i}">${ keys?.reduce((s, k) => s + `<span>${e[k]}</span>`, '') }</li>`, ''),
+			innerHTML: () => items?.reduce((a, e, i) => a + `<li class="item" data-index="${i}">${ keys?.reduce((a, k) => a + `<span>${e[k]}</span>`, '') }</li>`, `<li>${keys?.reduce((a, k) => a + `<span>${k}</span>`, '')}</li>`) || 'Пусто',
 			onclick: (event) => {
 				const target = event.target.closest('.item')
 				if (!target) return
-				callback(items[+target.dataset.index])
+				callback?.(items[+target.dataset.index])
 			}
 		}
 	}
